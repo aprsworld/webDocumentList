@@ -1,31 +1,57 @@
 #!/usr/local/bin/php -q
+<?
+/* first argument is directory to process */
+
+
+if ( 2 != $_SERVER['argc'] || ! is_dir($_SERVER['argv'][1]) ) {
+	die("generatePreview directoryToProcess\n");
+} else {
+	$startDir=$_SERVER['argv'][1];
+}
+?>
 mkdir -p previews
 <?
-$dir=opendir('./');
-while ( $f=readdir($dir) ) {
-	$parts = explode('.',$f);
+function do_dir($dirname) {
+//	printf("# do_dir(%s) getcwd()=%s\n",$dirname,getcwd());
 
-//	printf("# filename=%s basename=%s\n",$f,basename($f));
+	$dir=opendir($dirname);
+	while ( $f=readdir($dir) ) {
+		/* skip anything that starts with a . */
+		if ( '.' == substr($f,0,1) ) 
+			continue;
 
-	$fb=basename($f);
-	$extension=substr($fb,strlen($fb)-3);
-	$b=substr($fb,0,strlen($fb)-4);
+//		printf("# filename=%s basename=%s\n",$f,basename($f));
 
-	switch ( strtolower($extension) ) {
-		case "pdf":
-			printf("convert %s.pdf[0] -scale 220x220 previews/%s.preview220.png\n",$b,$b);
-			/* overlay PDF icon */
-			printf("composite -gravity southeast /home/jjeffers/winddatalogger_com/images/pdf.png previews/%s.preview220.png previews/%s.preview220.png\n",$b,$b);
-			printf("convert %s.pdf[0] -scale 640x640 previews/%s.preview640.png\n",$b,$b);
+		if ( is_dir( $dirname . '/' . $f ) ) {
+//			printf("## %s is a directory\n",$f);
+			do_dir( $dirname . '/' . $f);
+		}
+
+		$parts = explode('.',$f);
+
+
+		$fb=basename($f);
+		$extension=substr($fb,strlen($fb)-3);
+		$b=substr($fb,0,strlen($fb)-4);
+
+		switch ( strtolower($extension) ) {
+			case "pdf":
+				printf("convert %s/%s.pdf[0] -scale 220x220 previews/%s.preview220.png\n",$dirname,$b,$b);
+				/* overlay PDF icon */
+				printf("composite -gravity southeast /home/jjeffers/winddatalogger_com/images/pdf.png previews/%s.preview220.png previews/%s.preview220.png\n",$b,$b);
+				printf("convert %s/%s.pdf[0] -scale 640x640 previews/%s.preview640.png\n",$dirname,$b,$b);
 			
-			break;
-		case "jpg":
-			printf("convert %s.jpg -scale 220x220 previews/%s.preview220.jpg\n",$b,$b);
-			printf("convert %s.jpg -scale 640x640 previews/%s.preview640.jpg\n",$b,$b);
+				break;
+			case "jpg":
+				printf("convert %s/%s.jpg -scale 220x220 previews/%s.preview220.jpg\n",$dirname,$b,$b);
+				printf("convert %s/%s.jpg -scale 640x640 previews/%s.preview640.jpg\n",$dirname,$b,$b);
 
-			break;
+				break;
+		}
 	}
+	closedir($dir);
 }
-closedir($dir);
+
+do_dir($startDir);
 
 ?>

@@ -26,7 +26,8 @@ this.imagePreview = function(){
 
 		/* get filename only and then prefix with preview/ 
 		and postfix with preview640.png */
-		var fileExtension = this.href.substr(this.href.length-3);
+		//var fileExtension = this.href.substr(this.href.length-3);
+		var fileExtension = this.href.split('.').pop();
 		if ( 'jpg'!=fileExtension )
 			fileExtension='png';
 

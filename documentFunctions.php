@@ -5,7 +5,7 @@ function docFunctions_headMessage() {
 }
 
 /*
-filename|title|description|a name
+filename|title|description|a name|alternate version
 
 Example format for document tree:
 $d=array();
@@ -54,7 +54,7 @@ for ( $i=0 ; $i<count($d) ; $i++ ) {
 		$previewExtension='';
 		$type='Microsoft Excel';
 		$title='Spreadsheet';
-	} else if ( 'ppt' == $extension || 'ptx' == $extesion ) {
+	} else if ( 'ppt' == $extension || 'ptx' == $extension ) {
 		$previewExtension='png';
 		$type='Microsoft PowerPoint';
 		$title='Presentation';
@@ -74,7 +74,7 @@ for ( $i=0 ; $i<count($d) ; $i++ ) {
 			$id,
 			$doc[0],
 			$doc[1],
-			substr($doc[0],0,strlen($doc[0])-3) . "preview220",
+			substr(basename($doc[0]),0,strlen(basename($doc[0]))-3) . "preview220", 
 			$previewExtension,
 			$doc[1]
 		);
@@ -96,6 +96,9 @@ for ( $i=0 ; $i<count($d) ; $i++ ) {
 	}
 	printf("\t\t<b>Type:</b> %s<br />\n",$type);
 	printf("\t\t<b>Size:</b> %s KB<br />\n",number_format(filesize($doc[0])/1024.0,0));
+	if ( $doc[4] != '' ) {
+		printf("\t\t<b>Alternative Format:</b> <a href=\"%s\">%s</a><br />\n",htmlspecialchars($doc[4]),htmlspecialchars($doc[4]));
+	}
 	printf("\t</li>\n");
 
 	$lastParts=count($doc);
