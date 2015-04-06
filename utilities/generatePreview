@@ -1,0 +1,31 @@
+#!/usr/local/bin/php -q
+mkdir -p previews
+<?
+$dir=opendir('./');
+while ( $f=readdir($dir) ) {
+	$parts = explode('.',$f);
+
+//	printf("# filename=%s basename=%s\n",$f,basename($f));
+
+	$fb=basename($f);
+	$extension=substr($fb,strlen($fb)-3);
+	$b=substr($fb,0,strlen($fb)-4);
+
+	switch ( strtolower($extension) ) {
+		case "pdf":
+			printf("convert %s.pdf[0] -scale 220x220 previews/%s.preview220.png\n",$b,$b);
+			/* overlay PDF icon */
+			printf("composite -gravity southeast /home/jjeffers/winddatalogger_com/images/pdf.png previews/%s.preview220.png previews/%s.preview220.png\n",$b,$b);
+			printf("convert %s.pdf[0] -scale 640x640 previews/%s.preview640.png\n",$b,$b);
+			
+			break;
+		case "jpg":
+			printf("convert %s.jpg -scale 220x220 previews/%s.preview220.jpg\n",$b,$b);
+			printf("convert %s.jpg -scale 640x640 previews/%s.preview640.jpg\n",$b,$b);
+
+			break;
+	}
+}
+closedir($dir);
+
+?>
