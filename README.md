@@ -1,5 +1,5 @@
 ## document array
-filename|title|description|a name
+`filename|title|description|a name`
 
 ### filename
 relative path (both filesystem and URL) to file
